@@ -36,7 +36,7 @@ Which produces the following output:
 ```
 
 # Legend placeholders
-There are many placeholders available:
+There are many placeholders available for TextReporter:
 - {now} - current time
 - {started_at} - time when progress was started
 - {dt} - time since last report
