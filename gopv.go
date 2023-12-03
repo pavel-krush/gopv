@@ -45,22 +45,26 @@ func (p *Progress) WithReporter(r Reporter) *Progress {
 	return &cp
 }
 
-// Start starts progress tracker
-func (p *Progress) Start(ctx context.Context) {
+// StartCtx starts progress tracker using context
+func StartCtx(p *Progress, ctx context.Context) {
+	StartChan(p, ctx.Done())
+}
+
+// StartChan starts progress tracker using done channel
+func StartChan[T any](p *Progress, done <-chan T) {
 	p.startedAt = time.Now()
 	p.lastReportedAt = p.startedAt
-
-	go func(ctx context.Context) {
+	go func() {
 		p.reporter.Report(p.Report())
 		for {
 			select {
-			case <-ctx.Done():
+			case <-done:
 				return
 			case <-time.After(p.reportTime):
 				p.reporter.Report(p.Report())
 			}
 		}
-	}(ctx)
+	}()
 }
 
 // Add reports done items to the progress tracker

@@ -12,7 +12,7 @@ go get github.com/pavel-krush/gopv
 ```go
 // Initialize library and start reporting the progress
 pv := gopv.New(total)
-gopv.Start(ctx)
+gopv.StartCtx(ctx) // or gopv.StartChan(ctx.Done())
 
 // Execute long-running procedure
 for i := 0; i < total; i++ {
@@ -22,7 +22,7 @@ for i := 0; i < total; i++ {
 ```
 
 # Stopping
-Progress tracker can be stopped by cancelling the context which was passed to `Start()`
+Progress tracker can be stopped by cancelling the context which was passed to `StartCtx()` or by closing(orwriting to) the channel passed to `StartChan`.
 
 # Customizing
 By default, gopv generates reports in the following format:

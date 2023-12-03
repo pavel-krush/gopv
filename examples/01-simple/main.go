@@ -11,12 +11,12 @@ func main() {
 	const total = 360
 
 	ctx, cancel := context.WithCancel(context.Background())
-	pg := gopv.New(total)
-	pg.Start(ctx)
+	pv := gopv.New(total)
+	gopv.StartCtx(pv, ctx)
 
 	for i := 0; i < total; i++ {
 		<-time.After(time.Millisecond * 100)
-		pg.Add(1)
+		pv.Add(1)
 	}
 	cancel()
 }
