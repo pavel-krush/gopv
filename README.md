@@ -1,6 +1,11 @@
 # gopv
-gopv is a go library that helps track the progress of long-running tasks.
+**gopv** is a go library that helps track the progress of long-running tasks.
 It gives information such as time elapsed, percentage completed, current rps, eta and lots more.
+
+# Installation
+```bash
+go get github.com/pavel-krush/gopv
+```
 
 # Usage
 
