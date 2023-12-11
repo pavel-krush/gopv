@@ -2,13 +2,22 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/pavel-krush/gopv"
 )
 
 func main() {
-	const total = 360
+	fmt.Println("executing long task1...")
+	task()
+
+	fmt.Println("executing long task2...")
+	task()
+}
+
+func task() {
+	const total = 50
 
 	ctx, cancel := context.WithCancel(context.Background())
 	pv := gopv.NewTextWithLegend(total, gopv.TextReporterLegendProgressBar)
@@ -19,4 +28,5 @@ func main() {
 		pv.Add(1)
 	}
 	cancel()
+	<-pv.Done()
 }

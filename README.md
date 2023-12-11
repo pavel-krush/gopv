@@ -37,7 +37,7 @@ pv := gopv.NewTextWithLegend(498, "{progress_bar} {now} {percent_int} {rps_avg} 
 
 Which produces the following output:
 ```text
-[##----------------------------------------------------------------------------] 2023-12-03 01:45:00 3 8.99
+[######################--------------------------------------------------------] 2023-12-03 01:45:00 3 8.99
 ```
 
 # Legend placeholders
@@ -57,3 +57,21 @@ There are many placeholders available for TextReporter:
 - {rps_inst} - instant RPS(rps since last report)
 - {rpm} - average done items per minute
 - {progress_bar} - text-based progress bar
+
+# Synchronizing
+When controlling context is canceled or channel is closed, gopv will stop reporting progress.
+To guarantee that the last report is printed, you can use `Done()` method which returns
+a channel that is closed when the last report is printed:
+
+```go
+fmt.Println("executing a long task")
+ctx, cancel := context.WithCancel(context.Background())
+pv := gopv.New(total)
+pv.StartCtx(ctx)
+
+// do the work
+
+cancel()
+<-pv.Done()
+fmt.Println("done")
+```

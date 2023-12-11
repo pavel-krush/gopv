@@ -15,6 +15,7 @@ type Progress struct {
 	lastReportedAt   time.Time
 
 	reporter Reporter
+	doneCh   chan struct{}
 }
 
 var DefaultReportTime = time.Second
@@ -29,6 +30,7 @@ func New(total int) *Progress {
 		total:      int64(total),
 		reportTime: DefaultReportTime,
 		reporter:   NewTextReporter(),
+		doneCh:     make(chan struct{}),
 	}
 }
 
@@ -55,6 +57,10 @@ func StartChan[T any](p *Progress, done <-chan T) {
 	p.startedAt = time.Now()
 	p.lastReportedAt = p.startedAt
 	go func() {
+		defer func() {
+			p.reporter.Finalize()
+			defer close(p.doneCh)
+		}()
 		p.reporter.Report(p.Report())
 		for {
 			select {
@@ -110,4 +116,8 @@ func (p *Progress) Report() Report {
 		RPSInst:      float64(done-p.lastReportedDone) / dt.Seconds(),
 		RPMAvg:       float64(done) / now.Sub(p.startedAt).Minutes(),
 	}
+}
+
+func (p *Progress) Done() chan struct{} {
+	return p.doneCh
 }

@@ -12,6 +12,7 @@ import (
 
 type Reporter interface {
 	Report(report Report)
+	Finalize()
 }
 
 type Report struct {
@@ -84,9 +85,9 @@ type TextReporter struct {
 
 const (
 	// TextReporterLegendDefault is the default legend for TextReporter
-	TextReporterLegendDefault = "[{now}] - working ({done}/{total}) done {percent_int}%%, RPS {rps_avg}, elapsed {elapsed}, ETA {eta}  "
+	TextReporterLegendDefault = "[{now}] - working ({done}/{total}) done {percent_int}%%, RPS {rps_avg}, elapsed {elapsed}, ETA {eta}\r"
 	// TextReporterLegendProgressBar TextReporter legend with progress bar
-	TextReporterLegendProgressBar = "{progress_bar} {percent_int}%%, {rps_avg} RPS, {eta} ETA  "
+	TextReporterLegendProgressBar = "{progress_bar} {percent_int}%%, {rps_avg} RPS, {eta} ETA\r"
 	// TextReporterDefaultFloatPrecision is the default float precision for ann floats in TextReporter
 	TextReporterDefaultFloatPrecision = 2
 	// TextReporterDefaultProgressBarWidth is the default progress bar with for TextReporter
@@ -138,7 +139,6 @@ func (r *TextReporter) Report(report Report) {
 		r.writer = bufio.NewWriter(r.output)
 	}
 
-	r.writeString("\r")
 	eta := report.ETA.Round(time.Second)
 	if eta <= 0 {
 		eta = 0
@@ -173,6 +173,11 @@ func (r *TextReporter) Report(report Report) {
 	}
 
 	r.lastLegendLength = lineLength
+	r.flush()
+}
+
+func (r *TextReporter) Finalize() {
+	r.writeString("\n")
 	r.flush()
 }
 
